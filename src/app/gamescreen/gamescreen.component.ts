@@ -32,6 +32,7 @@ export class GamescreenComponent implements OnInit {
 	gameReady: boolean = false;	
 	resetOptions: boolean = false;
   correctMessage: string;
+  gameover: boolean = false;
 
 
 
@@ -41,7 +42,7 @@ export class GamescreenComponent implements OnInit {
 
   	this.trivia.getCategories().subscribe(data => {
   		
-  		this.categories = data.trivia_categories.slice(0, 15);
+  		this.categories = data.trivia_categories;
   		
 
   	})
@@ -85,16 +86,16 @@ export class GamescreenComponent implements OnInit {
   		const token = localStorage.getItem("apiToken");
 
   		if (token === null) {
-  		this.trivia.getToken().subscribe(res => {
-  	  	localStorage.setItem("apiToken", res.token);
-  		this.options.token = res.token;
-  		console.log(this.options);
-  		this.gameReady = true;
+  		  this.trivia.getToken().subscribe(res => {
+  	    localStorage.setItem("apiToken", res.token);
+  		  this.options.token = res.token;  		  
+  		  this.gameReady = true;
   	});
   		} else {
+
   			this.options.token = token;
   			this.gameReady = true;
-  			console.log(this.options);
+  			
   		}
   }
 
@@ -121,12 +122,18 @@ export class GamescreenComponent implements OnInit {
 
   nextQuestion() {
 
+    if(!this.gameover) {
+
   	this.activeQuiz = this.quizes[0];
     this.getAnswers();
   	this.quizes.splice(0, 1);
   	this.quizNumber++;
   	console.log(this.quizes.length);
   	this.trackRemainingQuiz();
+
+  } else {
+    console.log("game over!");
+  }
 
   }
 
@@ -140,18 +147,13 @@ export class GamescreenComponent implements OnInit {
   	} else {
 
   		this.resetOptions = false;
-      if (!this.gameStarted) {
 
+      if (!this.gameStarted) {
+        console.log("setting");
         this.quizes = num.results;
         this.gameStarted = !this.gameStarted;
 
-      } else {
-        
-  		num.results.map(result =>{
-        this.quizes.push(result);
-      });
-
-      }
+      } 
 
   		console.log(num);
 
@@ -161,6 +163,25 @@ export class GamescreenComponent implements OnInit {
 
   		this.nextQuestion();
   	}
+
+  }
+
+  appendMoreQuizes(num: any) { 
+
+    if (num.response_code !== 0) {
+
+      this.gameover = true;
+      console.log(num);
+
+    } else {
+      this.resetOptions = false;     
+      console.log("mapping");
+      num.results.map(result =>{
+        this.quizes.push(result);
+      });
+
+      
+    }
 
   }
 
@@ -175,11 +196,11 @@ export class GamescreenComponent implements OnInit {
 
   trackRemainingQuiz() {
 
-  	if (this.quizes.length <= 0) {
+  	if (this.quizes.length == 0) {
 
   		  	this.trivia.getQuizes(this.options).subscribe(data =>{
 
-  			this.checkQuizAmount(data);
+  			this.appendMoreQuizes(data);
   		});
   	}
 
