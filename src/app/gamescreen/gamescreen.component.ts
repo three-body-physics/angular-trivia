@@ -120,7 +120,7 @@ export class GamescreenComponent implements OnInit {
 
   }
 
-  nextQuestion() {
+  nextQuestion() { 
 
     if(!this.gameover) {
 
@@ -132,7 +132,9 @@ export class GamescreenComponent implements OnInit {
   	this.trackRemainingQuiz();
 
   } else {
-    console.log("game over!");
+
+    console.log("game over!"); //game over when quiz runs out
+
   }
 
   }
@@ -192,6 +194,9 @@ export class GamescreenComponent implements OnInit {
   	this.formatName = "";
   	this.categoryName = "";
   	this.options.difficulty = "";
+    this.gameover = false;
+    this.gameStarted = false;
+
   }
 
   trackRemainingQuiz() {
@@ -201,6 +206,7 @@ export class GamescreenComponent implements OnInit {
   		  	this.trivia.getQuizes(this.options).subscribe(data =>{
 
   			this.appendMoreQuizes(data);
+
   		});
   	}
 

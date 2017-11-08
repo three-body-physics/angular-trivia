@@ -45,16 +45,19 @@
     </div>
   </div>
   <div *ngIf="gamestage === 4 && !resetOptions" class="ui stacable centered cards grid">
+  	<div class="row">
     <div class="card">
       <div class="content">
         <div class="header">
           Question {{ this.quizNumber }}
         </div>
         <div class="description">
-          {{ activeQuiz.question }}
+          <h2>{{ activeQuiz.question }}</h2>
         </div>        
       </div>
     </div>
+    </div>
+    
     <div *ngFor="let answer of allAnswers" (click)="checkAnswer(answer)" class="card" style="cursor: pointer;">
       <div class="content">
         <div class="description">
@@ -62,6 +65,8 @@
         </div>        
       </div>
     </div>
+   
   </div>
   <p *ngIf="resetOptions">Not enough quizes available, choose different set of options</p>
   <button [disabled]="!this.gameReady" *ngIf="gamestage === 3" (click)="startGame()" class="ui blue button">Start game!</button>
+ </div>
