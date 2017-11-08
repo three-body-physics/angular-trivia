@@ -2,6 +2,7 @@
   <div class="ui text container">
     <h1>Select your options</h1>
     <h2><span *ngIf="options.category">{{ categoryName }} >> </span><span *ngIf="formatName">{{ formatName }} >> </span><span *ngIf="options.difficulty">{{ options.difficulty }}</span></h2>
+    <h3>{{ correctMessage }}</h3>
     <div (click)="resetGame()" class="ui blue button">reset</div>
   </div>
 </div>
@@ -43,14 +44,21 @@
     </div>
   </div>
   <div *ngIf="gamestage === 4 && !resetOptions" class="ui stacable centered cards grid">
-    <div (click)="nextQuestion()" class="card" style="cursor: pointer;">
+    <div class="card">
       <div class="content">
         <div class="header">
           Question {{ this.quizNumber }}
         </div>
         <div class="description">
           {{ activeQuiz.question }}
-        </div>
+        </div>        
+      </div>
+    </div>
+    <div *ngFor="let answer of allAnswers" (click)="checkAnswer(answer)" class="card" style="cursor: pointer;">
+      <div class="content">
+        <div class="description">
+          {{ answer }}
+        </div>        
       </div>
     </div>
   </div>

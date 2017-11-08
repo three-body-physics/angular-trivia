@@ -3,13 +3,14 @@ import { ViewEncapsulation } from '@angular/core';
 
 import { TriviaApiService } from './../services/trivia-api.service';
 import { Options } from './../types/option';
+import { AnswersService } from './../services/answers.service';
 
 @Component({
   selector: 'app-gamescreen',
   templateUrl: './gamescreen.component.html',
   styleUrls: ['./gamescreen.component.css'],
   encapsulation: ViewEncapsulation.None,
-  providers: [TriviaApiService]
+  providers: [TriviaApiService, AnswersService]
 })
 
 export class GamescreenComponent implements OnInit {
@@ -19,18 +20,20 @@ export class GamescreenComponent implements OnInit {
 	selectedFormat: number;
 	categories: object[];
 	categoryName: string;
+  allAnswers: string[];
 	
 	quizes: object[];
-	activeQuiz: object;
+	activeQuiz: any;
 	quizNumber: number = 0;
 	options: any = {};
 	gamestage: number = 0;	
 	difficulties: string[] = ["easy", "medium", "hard"];
 	gameReady: boolean = false;	
 	resetOptions: boolean = false;
+  correctMessage: string;
 
 
-  constructor(private trivia: TriviaApiService) { }
+  constructor(private trivia: TriviaApiService, private answerServ: AnswersService) { }
 
   ngOnInit() {
 
@@ -115,6 +118,7 @@ export class GamescreenComponent implements OnInit {
   nextQuestion() {
 
   	this.activeQuiz = this.quizes[0];
+    this.getAnswers();
   	this.quizes.splice(0, 1);
   	this.quizNumber++;
   	console.log(this.quizes.length);
@@ -124,7 +128,7 @@ export class GamescreenComponent implements OnInit {
 
   checkQuizAmount(num: any) {
 
-  	if (num.response_code === 1) {
+  	if (num.response_code !== 0) {
 
   		this.resetOptions = true;
   		console.log(num);
@@ -148,6 +152,9 @@ export class GamescreenComponent implements OnInit {
   	this.gamestage = 0;
   	this.quizNumber = 0;
   	this.resetOptions = false;
+  	this.formatName = "";
+  	this.categoryName = "";
+  	this.options.difficulty = "";
   }
 
   trackRemainingQuiz() {
@@ -160,6 +167,14 @@ export class GamescreenComponent implements OnInit {
   		});
   	}
 
+  }
+
+  getAnswers(): void {
+     this.allAnswers = this.answerServ.getCompoundAnswers(this.activeQuiz.incorrect_answers, this.activeQuiz.correct_answer);
+  }
+
+  checkAnswer(answer:string): void {
+    this.correctMessage = this.answerServ.checkAnswer(answer, this.nextQuestion.bind(this));
   }
 
 }
