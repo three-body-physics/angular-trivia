@@ -114,14 +114,17 @@ export class GamescreenComponent implements OnInit {
 
   nextQuestion() {
 
-  	this.activeQuiz = this.quizes[this.quizNumber];
+  	this.activeQuiz = this.quizes[0];
+  	this.quizes.splice(0, 1);
   	this.quizNumber++;
+  	console.log(this.quizes.length);
+  	this.trackRemainingQuiz();
 
   }
 
   checkQuizAmount(num: any) {
 
-  	if (typeof(num) === "undefined" || typeof(num.results) === "undefined") {
+  	if (num.response_code === 1) {
 
   		this.resetOptions = true;
   		console.log(num);
@@ -131,7 +134,11 @@ export class GamescreenComponent implements OnInit {
   		this.resetOptions = false;
   		this.quizes = num.results;
   		console.log(num);
+
+  		if (this.gamestage < 4) {
   		this.gamestage++;
+  		}
+
   		this.nextQuestion();
   	}
 
@@ -139,6 +146,20 @@ export class GamescreenComponent implements OnInit {
 
   resetGame() {
   	this.gamestage = 0;
+  	this.quizNumber = 0;
+  	this.resetOptions = false;
+  }
+
+  trackRemainingQuiz() {
+
+  	if (this.quizes.length <= 0) {
+
+  		  	this.trivia.getQuizes(this.options).subscribe(data =>{
+
+  			this.checkQuizAmount(data);
+  		});
+  	}
+
   }
 
 }
