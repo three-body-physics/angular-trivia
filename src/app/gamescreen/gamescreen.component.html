@@ -1,0 +1,58 @@
+<div class="ui inverted vertical masthead center aligned segment">
+  <div class="ui text container">
+    <h1>Select your options</h1>
+    <h2><span *ngIf="options.category">{{ categoryName }} >> </span><span *ngIf="formatName">{{ formatName }} >> </span><span *ngIf="options.difficulty">{{ options.difficulty }}</span></h2>
+    <div (click)="resetGame()" class="ui blue button">reset</div>
+  </div>
+</div>
+<div class="ui centered middle aligned stackable grid container" style="margin-top: 4em">
+  <div *ngIf="gamestage === 0" class="ui stacable centered cards grid">
+    <div *ngFor="let cat of categories, let i = index" (click)="changeMode(cat)" class="card" style="cursor: pointer;">
+      <div class="content">
+        <div class="header">
+          Category {{ i + 1 }}
+        </div>
+        <div class="description">
+          {{ cat.name }}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="gamestage === 1" class="ui stacable centered cards grid">
+    <div *ngFor="let format of formats, let i = index" (click)="changeMode(format)" class="card" style="cursor: pointer;">
+      <div class="content">
+        <div class="header">
+          format: {{ i + 1 }}
+        </div>
+        <div class="description">
+          {{ format }}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="gamestage === 2" class="ui stacable centered cards grid">
+    <div *ngFor="let dif of difficulties, let i = index" (click)="changeMode(dif)" class="card" style="cursor: pointer;">
+      <div class="content">
+        <div class="header">
+          difficulty {{ i + 1 }}
+        </div>
+        <div class="description">
+          {{ dif }}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="gamestage === 4 && !resetOptions" class="ui stacable centered cards grid">
+    <div (click)="nextQuestion()" class="card" style="cursor: pointer;">
+      <div class="content">
+        <div class="header">
+          Question {{ this.quizNumber }}
+        </div>
+        <div class="description">
+          {{ activeQuiz.question }}
+        </div>
+      </div>
+    </div>
+  </div>
+  <p *ngIf="resetOptions">Not enough quizes available, choose different set of options</p>
+  <button [disabled]="!this.gameReady" *ngIf="gamestage === 3" (click)="startGame()" class="ui blue button">Start game!</button>
