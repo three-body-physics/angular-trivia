@@ -2,15 +2,15 @@ import { Component, OnInit } from '@angular/core';
 import { ViewEncapsulation } from '@angular/core';
 
 import { TriviaApiService } from './../services/trivia-api.service';
-import { Options } from './../types/option';
 import { AnswersService } from './../services/answers.service';
+import { RecordService } from './../services/record.service';
 
 @Component({
   selector: 'app-gamescreen',
   templateUrl: './gamescreen.component.html',
   styleUrls: ['./gamescreen.component.css'],
   encapsulation: ViewEncapsulation.None,
-  providers: [TriviaApiService, AnswersService]
+  providers: [TriviaApiService, AnswersService, RecordService]
 })
 
 export class GamescreenComponent implements OnInit {
@@ -21,6 +21,7 @@ export class GamescreenComponent implements OnInit {
 	categories: object[];
 	categoryName: string;
   allAnswers: string[];
+  gameStarted: boolean = false;
 	
 	quizes: object[];
 	activeQuiz: any;
@@ -33,7 +34,8 @@ export class GamescreenComponent implements OnInit {
   correctMessage: string;
 
 
-  constructor(private trivia: TriviaApiService, private answerServ: AnswersService) { }
+
+  constructor(private trivia: TriviaApiService, private answerServ: AnswersService, private records: RecordService) { }
 
   ngOnInit() {
 
@@ -110,6 +112,8 @@ export class GamescreenComponent implements OnInit {
 
   	this.trivia.getQuizes(this.options).subscribe(data =>{
 
+        console.log(this.quizes);
+
   			this.checkQuizAmount(data);
   		});
 
@@ -136,7 +140,19 @@ export class GamescreenComponent implements OnInit {
   	} else {
 
   		this.resetOptions = false;
-  		this.quizes = num.results;
+      if (!this.gameStarted) {
+
+        this.quizes = num.results;
+        this.gameStarted = !this.gameStarted;
+
+      } else {
+        
+  		num.results.map(result =>{
+        this.quizes.push(result);
+      });
+
+      }
+
   		console.log(num);
 
   		if (this.gamestage < 4) {
@@ -175,6 +191,10 @@ export class GamescreenComponent implements OnInit {
 
   checkAnswer(answer:string): void {
     this.correctMessage = this.answerServ.checkAnswer(answer, this.nextQuestion.bind(this));
+  }
+
+  resetToken() {
+    localStorage.removeItem("apiToken");
   }
 
 }

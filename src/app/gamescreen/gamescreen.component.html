@@ -4,6 +4,7 @@
     <h2><span *ngIf="options.category">{{ categoryName }} >> </span><span *ngIf="formatName">{{ formatName }} >> </span><span *ngIf="options.difficulty">{{ options.difficulty }}</span></h2>
     <h3>{{ correctMessage }}</h3>
     <div (click)="resetGame()" class="ui blue button">reset</div>
+    <div (click)="resetToken()" class="ui blue button">reset token</div>
   </div>
 </div>
 <div class="ui centered middle aligned stackable grid container" style="margin-top: 4em">
