@@ -1,16 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChildren } from '@angular/core';
 import { ViewEncapsulation } from '@angular/core';
 
 import { TriviaApiService } from './../services/trivia-api.service';
 import { AnswersService } from './../services/answers.service';
 import { RecordService } from './../services/record.service';
+import { AnswerButtonComponent } from './../answer-button/answer-button.component';
+
 
 @Component({
   selector: 'app-gamescreen',
   templateUrl: './gamescreen.component.html',
   styleUrls: ['./gamescreen.component.css'],
   encapsulation: ViewEncapsulation.None,
-  providers: [TriviaApiService, AnswersService, RecordService]
+  providers: [TriviaApiService, AnswersService, RecordService],
+  
 })
 
 export class GamescreenComponent implements OnInit {
@@ -22,6 +25,7 @@ export class GamescreenComponent implements OnInit {
 	categoryName: string;
   allAnswers: string[];
   gameStarted: boolean = false;
+  activeQuestion: string;
 	
 	quizes: object[];
 	activeQuiz: any;
@@ -33,12 +37,17 @@ export class GamescreenComponent implements OnInit {
 	resetOptions: boolean = false;
   correctMessage: string;
   gameover: boolean = false;
+  answered: boolean = false;
 
+  answerComponents: AnswerButtonComponent[];
+  
+
+  @ViewChildren("answernode") answernode;
 
 
   constructor(private trivia: TriviaApiService, private answerServ: AnswersService, private records: RecordService) { }
 
-  ngOnInit() {
+  ngOnInit() {    
 
   	this.trivia.getCategories().subscribe(data => {
   		
@@ -48,7 +57,10 @@ export class GamescreenComponent implements OnInit {
   	})
   }
 
-  changeMode(dif: any) {
+
+
+  changeMode(dif: any) { //extract option data from option elements and compose option object
+
   	if (typeof dif === "object" && this.gamestage === 0){
   		
   		this.options.category = dif.id;
@@ -73,16 +85,17 @@ export class GamescreenComponent implements OnInit {
   	} else if (typeof dif === "string" && this.gamestage === 2) {
   		this.options.difficulty = dif;
   		this.options.amount = this.getAmount();
-  		this.options.mode = "multiple";
+  		this.options.mode = "any"; 
   		this.checkToken();
   
   	}   	
 
   	this.gamestage++;
-  	console.log(this.gamestage);
+  	
   }
 
-  checkToken(): void {
+  checkToken(): void { //extract unique token from API that prevents repeated json data
+
   		const token = localStorage.getItem("apiToken");
 
   		if (token === null) {
@@ -99,12 +112,12 @@ export class GamescreenComponent implements OnInit {
   		}
   }
 
-  getAmount(): number {
+  getAmount(): number { //might change this method
 
   	if (this.selectedFormat === 1) {
-  		return 10;
+  		return 5;
   	} else {
-  		return 50;
+  		return 5;
   	}
 
   }
@@ -113,8 +126,11 @@ export class GamescreenComponent implements OnInit {
 
   	this.trivia.getQuizes(this.options).subscribe(data =>{
 
-        console.log(this.quizes);
+          var cleanData = data.results.map(result => {
 
+          return result.question;
+        })        
+        
   			this.checkQuizAmount(data);
   		});
 
@@ -122,14 +138,17 @@ export class GamescreenComponent implements OnInit {
 
   nextQuestion() { 
 
-    if(!this.gameover) {
+    this.trackRemainingQuiz();  
+
+    if(this.quizes.length !== 0) {
 
   	this.activeQuiz = this.quizes[0];
+
+    this.activeQuestion = this.answerServ.cleanUP(this.activeQuiz.question); 
     this.getAnswers();
   	this.quizes.splice(0, 1);
-  	this.quizNumber++;
-  	console.log(this.quizes.length);
-  	this.trackRemainingQuiz();
+  	this.quizNumber++;  	 	  
+
 
   } else {
 
@@ -139,25 +158,23 @@ export class GamescreenComponent implements OnInit {
 
   }
 
-  checkQuizAmount(num: any) {
+  checkQuizAmount(num: any) { //calls after start game
 
   	if (num.response_code !== 0) {
 
   		this.resetOptions = true;
-  		console.log(num);
+  		
 
   	} else {
 
   		this.resetOptions = false;
 
       if (!this.gameStarted) {
-        console.log("setting");
+        
         this.quizes = num.results;
         this.gameStarted = !this.gameStarted;
 
       } 
-
-  		console.log(num);
 
   		if (this.gamestage < 4) {
   		this.gamestage++;
@@ -168,24 +185,25 @@ export class GamescreenComponent implements OnInit {
 
   }
 
-  appendMoreQuizes(num: any) { 
+  // appendMoreQuizes(num: any) { 
 
-    if (num.response_code !== 0) {
+  //   if (num.response_code !== 0) {
 
-      this.gameover = true;
-      console.log(num);
+  //     this.gameover = true;
+      
 
-    } else {
-      this.resetOptions = false;     
-      console.log("mapping");
-      num.results.map(result =>{
-        this.quizes.push(result);
-      });
+  //   } else {
+
+  //     this.resetOptions = false;     
+      
+  //     num.results.map(result =>{
+  //       this.quizes.push(result);
+  //     });
 
       
-    }
+  //   }
 
-  }
+  // }
 
   resetGame() {
   	this.gamestage = 0;
@@ -196,28 +214,51 @@ export class GamescreenComponent implements OnInit {
   	this.options.difficulty = "";
     this.gameover = false;
     this.gameStarted = false;
+    this.allAnswers = [];
 
   }
 
   trackRemainingQuiz() {
 
-  	if (this.quizes.length == 0) {
+  	if (this.quizes.length  == 0) {
 
-  		  	this.trivia.getQuizes(this.options).subscribe(data =>{
+  		//   	this.trivia.getQuizes(this.options).subscribe(data =>{
 
-  			this.appendMoreQuizes(data);
+  		// 	this.appendMoreQuizes(data);
 
-  		});
+  		// });
+
+      this.gameover = true;
+
   	}
 
   }
 
   getAnswers(): void {
      this.allAnswers = this.answerServ.getCompoundAnswers(this.activeQuiz.incorrect_answers, this.activeQuiz.correct_answer);
+     this.answernode.changes.subscribe(c => { this.answerComponents = c.toArray() }); //return updated Child components with answers embedded
   }
 
-  checkAnswer(answer:string): void {
-    this.correctMessage = this.answerServ.checkAnswer(answer, this.nextQuestion.bind(this));
+  checkAnswer(answer:string, event): void {    
+
+    if (!this.gameover)  {
+
+    if (this.answered === false) {
+
+      this.answered = true;      
+
+      setTimeout((() => {
+        this.answered = false;
+      }), 1500);
+
+    this.correctMessage = this.answerServ.checkAnswer(answer, this.nextQuestion.bind(this), event.target, this.answerComponents);
+    } else {
+
+      return;
+
+    }
+
+    }
   }
 
   resetToken() {

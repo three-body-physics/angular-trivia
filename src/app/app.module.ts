@@ -6,6 +6,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
 import { GamescreenComponent } from './gamescreen/gamescreen.component';
+import { AnswerButtonComponent } from './answer-button/answer-button.component';
 
 
 
@@ -14,7 +15,8 @@ import { GamescreenComponent } from './gamescreen/gamescreen.component';
 @NgModule({
   declarations: [
     AppComponent,
-    GamescreenComponent
+    GamescreenComponent,
+    AnswerButtonComponent
 
     
   ],

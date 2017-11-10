@@ -18,7 +18,7 @@ export class TriviaApiService {
 
   getQuizes(query: any): Observable<any> {
   	return this.http.get(
-  		`https://opentdb.com/api.php?amount=${query.amount}&category=${query.category}&difficulty=${query.difficulty}&type=${query.mode}&token=${query.token}`);
+  		`https://opentdb.com/api.php?amount=${query.amount}&category=${query.category}&difficulty=${query.difficulty}`);
   }
 
   getCategories(): Observable<any> {

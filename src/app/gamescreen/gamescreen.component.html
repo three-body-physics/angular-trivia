@@ -1,72 +1,64 @@
-<div class="ui inverted vertical masthead center aligned segment">
+<div class="ui inverted vertical masthead center aligned segment" style="background: #333333">
   <div class="ui text container">
-    <h1>Select your options</h1>
-    <h2><span *ngIf="options.category">{{ categoryName }} >> </span><span *ngIf="formatName">{{ formatName }} >> </span><span *ngIf="options.difficulty">{{ options.difficulty }}</span></h2>
-    <h3>{{ correctMessage }}</h3>
+    <h1 *ngIf="gamestage !== 4">Select your options</h1>
+    <h2 *ngIf="gamestage !== 4"><span *ngIf="options.category">{{ categoryName }} >> </span><span *ngIf="formatName">{{ formatName }} >> </span><span *ngIf="options.difficulty">{{ options.difficulty }}</span></h2>
+    <h3 *ngIf="quizes">{{ correctMessage }} + {{ quizes.length }}</h3>
     <div (click)="resetGame()" class="ui blue button">reset</div>
     <div (click)="resetToken()" class="ui blue button">reset token</div>
   </div>
 </div>
-<div class="ui centered middle aligned stackable grid container" style="margin-top: 4em">
-  <div *ngIf="gamestage === 0" class="ui stacable centered cards grid">
-    <div *ngFor="let cat of categories, let i = index" (click)="changeMode(cat)" class="card" style="cursor: pointer;">
-      <div class="content">
-        <div class="header">
-          Category {{ i + 1 }}
-        </div>
-        <div class="description">
-          {{ cat.name }}
+<div>
+  <div class="ui centered middle aligned stackable grid container" style="margin-top: 4em">
+    <div *ngIf="gamestage === 0" class="ui stacable centered cards grid">
+      <div *ngFor="let cat of categories, let i = index" (click)="changeMode(cat)" class="card" style="cursor: pointer;">
+        <div class="content">
+          <div class="header">
+            Category {{ i + 1 }}
+          </div>
+          <div class="description">
+            {{ cat.name }}
+          </div>
         </div>
       </div>
     </div>
+    <div *ngIf="gamestage === 1" class="ui stakcable centered cards grid">
+      <div *ngFor="let format of formats, let i = index" (click)="changeMode(format)" class="card" style="cursor: pointer;">
+        <div class="content">
+          <div class="header">
+            format: {{ i + 1 }}
+          </div>
+          <div class="description">
+            {{ format }}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="gamestage === 2" class="ui stackable centered cards grid">
+      <div *ngFor="let dif of difficulties, let i = index" (click)="changeMode(dif)" class="card" style="cursor: pointer;">
+        <div class="content">
+          <div class="header">
+            difficulty {{ i + 1 }}
+          </div>
+          <div class="description">
+            {{ dif }}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="gamestage === 4 && !resetOptions" class="ui text container">
+      <h2>{{ activeQuestion }}</h2>
+    </div>
+    <div class="ui centered cards grid">
+      <app-answer-button *ngFor="let answer of allAnswers" [myAnswer]="answer" (click)="checkAnswer(answer, $event)" #answernode class="card" style="cursor: pointer;"></app-answer-button>
+      <!--         <div *ngFor="let answer of allAnswers" (click)="checkAnswer(answer, $event)" class="card" style="cursor: pointer;">
+          <div class="content">
+            <div class="description">
+              {{ answer }}
+            </div>
+          </div>
+        </div> -->
+    </div>
+    <p *ngIf="resetOptions">Not enough quizes available, choose different set of options</p>
+    <button [disabled]="!this.gameReady" *ngIf="gamestage === 3" (click)="startGame()" class="ui blue button">Start game!</button>
   </div>
-  <div *ngIf="gamestage === 1" class="ui stacable centered cards grid">
-    <div *ngFor="let format of formats, let i = index" (click)="changeMode(format)" class="card" style="cursor: pointer;">
-      <div class="content">
-        <div class="header">
-          format: {{ i + 1 }}
-        </div>
-        <div class="description">
-          {{ format }}
-        </div>
-      </div>
-    </div>
-  </div>
-  <div *ngIf="gamestage === 2" class="ui stacable centered cards grid">
-    <div *ngFor="let dif of difficulties, let i = index" (click)="changeMode(dif)" class="card" style="cursor: pointer;">
-      <div class="content">
-        <div class="header">
-          difficulty {{ i + 1 }}
-        </div>
-        <div class="description">
-          {{ dif }}
-        </div>
-      </div>
-    </div>
-  </div>
-  <div *ngIf="gamestage === 4 && !resetOptions" class="ui stacable centered cards grid">
-  	<div class="row">
-    <div class="card">
-      <div class="content">
-        <div class="header">
-          Question {{ this.quizNumber }}
-        </div>
-        <div class="description">
-          <h2>{{ activeQuiz.question }}</h2>
-        </div>        
-      </div>
-    </div>
-    </div>
-    
-    <div *ngFor="let answer of allAnswers" (click)="checkAnswer(answer)" class="card" style="cursor: pointer;">
-      <div class="content">
-        <div class="description">
-          {{ answer }}
-        </div>        
-      </div>
-    </div>
-   
-  </div>
-  <p *ngIf="resetOptions">Not enough quizes available, choose different set of options</p>
-  <button [disabled]="!this.gameReady" *ngIf="gamestage === 3" (click)="startGame()" class="ui blue button">Start game!</button>
- </div>
+</div>
