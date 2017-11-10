@@ -14,8 +14,9 @@ export class AnswersService {
   getCompoundAnswers(inc: string[], cor: string) {
 
   	inc.push(cor);
-  	this.correctAnswer = cor;
     
+  	this.correctAnswer = this.cleanUP(cor);
+
     var cleanInc = inc.map(ans=>{
       
       return this.cleanUP(ans);
@@ -28,8 +29,8 @@ export class AnswersService {
 
   cleanUP(str: string) {
 
-      return str.replace(/&(lt|gt|quot|amp|ldquo|#039|eacute);/g, (m, p) => {
-      return (p == "quot") ? '"' : ((p == "eacute") ? "e'" : "'");
+      return str.replace(/&(lt|gt|quot|amp|ldquo|#039|eacute|ntilde|aacute|oacute);/g, (m, p) => {
+      return (p == "quot") ? '"' : ((p == "eacute") ? "e'" : (p == "ntilde") ? "n" : (p == "aacute") ? "a" : "'");
     });
 
   }

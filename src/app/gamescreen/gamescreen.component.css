@@ -3,3 +3,35 @@
 	margin-bottom: 2em;
 }
 
+* {
+	text-align: center;
+}
+
+#countdown {
+
+	height: 10em;
+}
+
+#minute {
+	
+	border-radius: 10px;	
+	text-align: center;	
+	text-transform: uppercase;
+	font-size: 3em;
+	padding: 1em;
+	background: #fa5559;
+	line-height: 100%;
+	display: inline-block;
+  	vertical-align: middle;
+}
+
+.masthead.segment {
+
+	background: #333333;
+	min-height: 350px;
+}
+
+#gamearea {
+	
+	margin-top: 4em;
+}

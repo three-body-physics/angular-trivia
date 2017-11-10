@@ -36,8 +36,12 @@ export class GamescreenComponent implements OnInit {
 	gameReady: boolean = false;	
 	resetOptions: boolean = false;
   correctMessage: string;
+  correctAnswer: string;
   gameover: boolean = false;
   answered: boolean = false;
+
+  correctCount: number = 0;
+  incorrectCount: number = 0;
 
   answerComponents: AnswerButtonComponent[];
   
@@ -51,7 +55,7 @@ export class GamescreenComponent implements OnInit {
 
   	this.trivia.getCategories().subscribe(data => {
   		
-  		this.categories = data.trivia_categories;
+  		this.categories = data.trivia_categories.slice(0, 9);
   		
 
   	})
@@ -115,9 +119,9 @@ export class GamescreenComponent implements OnInit {
   getAmount(): number { //might change this method
 
   	if (this.selectedFormat === 1) {
-  		return 5;
+  		return 15;
   	} else {
-  		return 5;
+  		return 15;
   	}
 
   }
@@ -126,12 +130,9 @@ export class GamescreenComponent implements OnInit {
 
   	this.trivia.getQuizes(this.options).subscribe(data =>{
 
-          var cleanData = data.results.map(result => {
 
-          return result.question;
-        })        
-        
   			this.checkQuizAmount(data);
+
   		});
 
   }
@@ -144,7 +145,8 @@ export class GamescreenComponent implements OnInit {
 
   	this.activeQuiz = this.quizes[0];
 
-    this.activeQuestion = this.answerServ.cleanUP(this.activeQuiz.question); 
+    this.activeQuestion = this.answerServ.cleanUP(this.activeQuiz.question);
+    this.correctAnswer = this.answerServ.cleanUP(this.activeQuiz.correct_answer); 
     this.getAnswers();
   	this.quizes.splice(0, 1);
   	this.quizNumber++;  	 	  
@@ -156,6 +158,13 @@ export class GamescreenComponent implements OnInit {
 
   }
 
+  }
+
+  addAnswerTally(answer: string) {
+
+    (this.correctAnswer === answer) ? this.correctCount++ : this.incorrectCount++;
+
+    
   }
 
   checkQuizAmount(num: any) { //calls after start game
@@ -239,7 +248,7 @@ export class GamescreenComponent implements OnInit {
      this.answernode.changes.subscribe(c => { this.answerComponents = c.toArray() }); //return updated Child components with answers embedded
   }
 
-  checkAnswer(answer:string, event): void {    
+  checkAnswer(answer:string, event): void {
 
     if (!this.gameover)  {
 
