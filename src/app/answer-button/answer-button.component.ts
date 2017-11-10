@@ -24,9 +24,13 @@ export class AnswerButtonComponent implements OnInit {
 
 
   confirmClick() {
+
+  	if (!this.clicked) {
   	
   	this.clicked = true;
   	this.onTruth.emit(this.myAnswer);
+
+  	}
 
   }
 
@@ -42,7 +46,7 @@ export class AnswerButtonComponent implements OnInit {
 
     }
 
-  	setTimeout((() => { this.card.nativeElement.style.background = "white"; this.clicked = false; }), 1500);
+  	setTimeout((() => { this.card.nativeElement.style.background = "white"; this.clicked = false; }), 1000);
 
   	}
 

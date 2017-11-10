@@ -162,9 +162,11 @@ export class GamescreenComponent implements OnInit {
 
   addAnswerTally(answer: string) {
 
+    if (!this.gameover) {
+
     (this.correctAnswer === answer) ? this.correctCount++ : this.incorrectCount++;
 
-    
+    }
   }
 
   checkQuizAmount(num: any) { //calls after start game
@@ -224,6 +226,7 @@ export class GamescreenComponent implements OnInit {
     this.gameover = false;
     this.gameStarted = false;
     this.allAnswers = [];
+    this.correctCount = this.incorrectCount = 0;
 
   }
 
@@ -258,7 +261,7 @@ export class GamescreenComponent implements OnInit {
 
       setTimeout((() => {
         this.answered = false;
-      }), 1500);
+      }), 1000);
 
     this.correctMessage = this.answerServ.checkAnswer(answer, this.nextQuestion.bind(this), event.target, this.answerComponents);
     } else {

@@ -14,7 +14,7 @@ export class AnswersService {
   getCompoundAnswers(inc: string[], cor: string) {
 
   	inc.push(cor);
-    
+
   	this.correctAnswer = this.cleanUP(cor);
 
     var cleanInc = inc.map(ans=>{
@@ -64,7 +64,7 @@ export class AnswersService {
         button.confirmAnswer(this.correctAnswer);
       });
 
-      setTimeout(function(){ callback(); }, 1500);  	
+      setTimeout(function(){ callback(); }, 1000);  	
 
     if (answer === this.correctAnswer) {   	
 

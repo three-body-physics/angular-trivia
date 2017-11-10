@@ -1,7 +1,7 @@
 <div #card class="ui fluid card" (click)="confirmClick()" style="cursor: pointer;">
   <div class="content">
-    <div class="description" style="text-align: center;">
-      {{ myAnswer }}
+    <div class="description" style="text-align: center;" [innerHTML]="myAnswer">
+ 
     </div>
   </div>
 </div>
