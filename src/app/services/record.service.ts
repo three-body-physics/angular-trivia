@@ -3,8 +3,7 @@ import { Injectable } from '@angular/core';
 @Injectable()
 export class RecordService {
 
-	private gameMode: string;
-	private TotalQuestion: number;
+	private TotalQuestions: number;
 	private username: string;
 	private date: string;
 	private timeTaken: number;
@@ -13,6 +12,7 @@ export class RecordService {
 	private corrects: number;
 	private incorrects: number;
 	private user: any = {
+
 		username: "",
 		
 		record: {

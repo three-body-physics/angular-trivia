@@ -1,23 +1,39 @@
 <div>
-
-<div class="ui inverted vertical masthead center aligned segment">
-  <div class="ui text container">
-
-    <div id="countdown">
-      <span id="minute">05: 00</span>        
+  <div class="ui inverted vertical masthead center aligned segment">
+    <div class="ui text container">
+      <div *ngIf="gamestage >= 3" id="countdown">
+        <span id="minute">05: 00</span>
+      </div>
+      <div *ngIf="gamestage < 3" style="margin-top: 9em">
+        <h1>Please pick the category and difficulty</h1>
+      </div>
+      <div class="ui steps">
+        <div *ngIf="categoryName" class="step">
+          <div class="content">
+            <div class="title">
+              Category
+            </div>
+            <div class="description">
+              {{ categoryName }}
+            </div>
+          </div>
+        </div>
+        <div *ngIf="activeDifficulty" class="active step">
+          <div class="content">
+            <div class="title">
+              Difficulty
+            </div>
+            <div class="description">
+              {{ activeDifficulty }}
+            </div>
+          </div>
+        </div>
+      </div>
+      <h3 *ngIf="gamestage === 3"> Questions left <span *ngIf="quizes">{{ quizes.length }}</span></h3>
+<!--       <div (click)="resetToken()" class="ui blue button" style="margin: 0; display: block;">reset token</div> -->
     </div>
-
-<!--     <h1 *ngIf="gamestage !== 4">Select your options</h1>
-    <h2 *ngIf="gamestage !== 4"><span *ngIf="options.category">{{ categoryName }} >> </span><span *ngIf="formatName">{{ formatName }} >> </span><span *ngIf="options.difficulty">{{ options.difficulty }}</span></h2> -->
-    <h3> Remaining Questions: <span *ngIf="quizes">{{ quizes.length }}</span></h3>
-    <h3><span>Correct Answers: {{ correctCount }}</span><span> Incorrect Answers: {{ incorrectCount }}</span></h3>
-    <div (click)="resetGame()" class="ui blue button" style="margin: 0;">reset</div>
-    <div (click)="resetToken()" class="ui blue button" style="margin: 0;">reset token</div>
   </div>
-</div>
-
   <!-- body -->
-
   <div class="ui container" id="gamearea">
     <div class="row">
       <div *ngIf="gamestage === 0" class="ui stackable centered cards grid">
@@ -32,19 +48,7 @@
           </div>
         </div>
       </div>
-      <div *ngIf="gamestage === 1" class="ui stakcable centered cards grid">
-        <div *ngFor="let format of formats, let i = index" (click)="changeMode(format)" class="card" style="cursor: pointer;">
-          <div class="content">
-            <div class="header">
-              format: {{ i + 1 }}
-            </div>
-            <div class="description">
-              {{ format }}
-            </div>
-          </div>
-        </div>
-      </div>
-      <div *ngIf="gamestage === 2" class="ui stackable centered cards grid ">
+      <div *ngIf="gamestage === 1" class="ui stackable centered cards grid ">
         <div *ngFor="let dif of difficulties, let i = index" (click)="changeMode(dif)" class="card" style="cursor: pointer;">
           <div class="content">
             <div class="header">
@@ -58,11 +62,11 @@
       </div>
     </div>
     <div class="row">
-      <div *ngIf="gamestage === 4 && !resetOptions" class="ui centered text container">
+      <div *ngIf="gamestage === 3 && !resetOptions" class="ui centered text container">
         <h3>{{ activeQuestion }}</h3>
       </div>
     </div>
-    <div class="row">
+    <div *ngIf="gamestage === 3" class="row">
       <div class="ui centered two column doubling grid">
         <app-answer-button *ngFor="let answer of allAnswers" [myAnswer]="answer" (click)="checkAnswer(answer, $event)" (onTruth)="addAnswerTally($event)" #answernode class="seven wide column" style="box-sizing: border-box; padding: 0px; margin: 10px;"></app-answer-button>
         <!--         <div *ngFor="let answer of allAnswers" (click)="checkAnswer(answer, $event)" class="card" style="cursor: pointer;">
@@ -74,9 +78,13 @@
         </div> -->
       </div>
     </div>
+    <div *ngIf="gamestage === 4" class="row">
+      <p>Game over! Here are your stats:</p>
+      <p>You scored {{ correctCount }} out of 15.</p>
+      <div (click)="resetGame()" class="ui blue button" style="margin: 0;">Start a new game</div>
+    </div>
     <p *ngIf="resetOptions">Not enough quizes available, choose different set of options</p>
-    <button [disabled]="!this.gameReady" *ngIf="gamestage === 3" (click)="startGame()" class="ui blue button">Start game!</button>
+    <div *ngIf="resetOptions" (click)="resetGame()" class="ui blue button" style="margin: 0;">Start a new game</div>
+    <button [disabled]="!this.gameReady" *ngIf="gamestage === 2 && !resetOptions" (click)="startGame()" class="ui blue button">Start game!</button>
   </div>
 </div>
-
-

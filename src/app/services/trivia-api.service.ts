@@ -18,7 +18,7 @@ export class TriviaApiService {
 
   getQuizes(query: any): Observable<any> {
   	return this.http.get(
-  		`https://opentdb.com/api.php?amount=${query.amount}&category=${query.category}&difficulty=${query.difficulty}`);
+  		`https://opentdb.com/api.php?amount=${query.amount}&category=${query.category}&difficulty=${query.difficulty}&token=${query.token}`);
   }
 
   getCategories(): Observable<any> {
@@ -27,6 +27,11 @@ export class TriviaApiService {
 
   getToken(): Observable<any> {
   	return this.http.get("https://opentdb.com/api_token.php?command=request");
+  }
+
+  resetToken(): void {
+    let token = localStorage.getItem("apiToken");
+    this.http.get("https://opentdb.com/api_token.php?command=reset&token=${token}")
   }
 
  

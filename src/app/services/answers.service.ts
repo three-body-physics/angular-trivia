@@ -29,7 +29,7 @@ export class AnswersService {
 
   cleanUP(str: string) {
 
-      return str.replace(/&(lt|gt|quot|amp|ldquo|#039|eacute|ntilde|aacute|oacute);/g, (m, p) => {
+      return str.replace(/&(lt|gt|quot|amp|ldquo|#039|eacute|ntilde|aacute|oacute|rdquo);/g, (m, p) => {
       return (p == "quot") ? '"' : ((p == "eacute") ? "e'" : (p == "ntilde") ? "n" : (p == "aacute") ? "a" : "'");
     });
 

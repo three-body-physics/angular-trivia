@@ -5,7 +5,7 @@ import { TriviaApiService } from './../services/trivia-api.service';
 import { AnswersService } from './../services/answers.service';
 import { RecordService } from './../services/record.service';
 import { AnswerButtonComponent } from './../answer-button/answer-button.component';
-
+import { categories } from './../services/categories';
 
 @Component({
   selector: 'app-gamescreen',
@@ -18,30 +18,33 @@ import { AnswerButtonComponent } from './../answer-button/answer-button.componen
 
 export class GamescreenComponent implements OnInit {
 
-	formats: string[] = ["Time trial", "Marathon"];
-	formatName: string;
-	selectedFormat: number;
+  // gameoptions
+	
 	categories: object[];
 	categoryName: string;
-  allAnswers: string[];
-  gameStarted: boolean = false;
-  activeQuestion: string;
-	
-	quizes: object[];
-	activeQuiz: any;
-	quizNumber: number = 0;
+  activeDifficulty: string;
 	options: any = {};
-	gamestage: number = 0;	
 	difficulties: string[] = ["easy", "medium", "hard"];
-	gameReady: boolean = false;	
-	resetOptions: boolean = false;
-  correctMessage: string;
-  correctAnswer: string;
+
+   // gamestate
+  gameReady: boolean = false;  
   gameover: boolean = false;
   answered: boolean = false;
+  resetOptions: boolean = false;
+  correctMessage: string;
+  gamestage: number = 0;  
+  gameStarted: boolean = false;
 
+  // quiz variables  
+  quizes: object[];    
+  activeQuiz: any;
+  activeQuestion: string;
+  allAnswers: string[];
+  correctAnswer: string;
+  quizNumber: number = 0;
   correctCount: number = 0;
   incorrectCount: number = 0;
+  
 
   answerComponents: AnswerButtonComponent[];
   
@@ -53,42 +56,23 @@ export class GamescreenComponent implements OnInit {
 
   ngOnInit() {    
 
-  	this.trivia.getCategories().subscribe(data => {
-  		
-  		this.categories = data.trivia_categories.slice(0, 9);
-  		
-
-  	})
+  	this.categories = categories;
+  	
   }
 
+  changeMode(value: any) { //extract data from selection screen and compose option object
 
-
-  changeMode(dif: any) { //extract option data from option elements and compose option object
-
-  	if (typeof dif === "object" && this.gamestage === 0){
+  	if (typeof value === "object" && this.gamestage === 0){
   		
-  		this.options.category = dif.id;
-  		this.categoryName = dif.name;
+  		this.options.category = value.id;
+  		this.categoryName = value.name;
 
 
-  	} else if (typeof dif === "string" && this.gamestage === 1) {
+  	} else if (typeof value === "string" && this.gamestage === 1) {
 
-  		switch(dif) {
-  			case "Time trial": {
-  				this.selectedFormat = 0;
-  				this.formatName = this.formats[this.selectedFormat];
-  				break;
-  			}
-  			case "Marathon": {
-  				this.selectedFormat = 1;
-  				this.formatName = this.formats[this.selectedFormat];
-  				break;
-  			}
-  		}
-
-  	} else if (typeof dif === "string" && this.gamestage === 2) {
-  		this.options.difficulty = dif;
-  		this.options.amount = this.getAmount();
+      this.activeDifficulty = value;
+  		this.options.difficulty = value;
+  		this.options.amount = 15;
   		this.options.mode = "any"; 
   		this.checkToken();
   
@@ -103,11 +87,13 @@ export class GamescreenComponent implements OnInit {
   		const token = localStorage.getItem("apiToken");
 
   		if (token === null) {
+
   		  this.trivia.getToken().subscribe(res => {
   	    localStorage.setItem("apiToken", res.token);
   		  this.options.token = res.token;  		  
   		  this.gameReady = true;
-  	});
+  	    });
+
   		} else {
 
   			this.options.token = token;
@@ -116,20 +102,10 @@ export class GamescreenComponent implements OnInit {
   		}
   }
 
-  getAmount(): number { //might change this method
-
-  	if (this.selectedFormat === 1) {
-  		return 15;
-  	} else {
-  		return 15;
-  	}
-
-  }
 
   startGame() {
 
   	this.trivia.getQuizes(this.options).subscribe(data =>{
-
 
   			this.checkQuizAmount(data);
 
@@ -146,7 +122,8 @@ export class GamescreenComponent implements OnInit {
   	this.activeQuiz = this.quizes[0];
 
     this.activeQuestion = this.answerServ.cleanUP(this.activeQuiz.question);
-    this.correctAnswer = this.answerServ.cleanUP(this.activeQuiz.correct_answer); 
+    this.correctAnswer = this.answerServ.cleanUP(this.activeQuiz.correct_answer);
+
     this.getAnswers();
   	this.quizes.splice(0, 1);
   	this.quizNumber++;  	 	  
@@ -155,6 +132,7 @@ export class GamescreenComponent implements OnInit {
   } else {
 
     console.log("game over!"); //game over when quiz runs out
+    this.gamestage = 4;
 
   }
 
@@ -169,9 +147,9 @@ export class GamescreenComponent implements OnInit {
     }
   }
 
-  checkQuizAmount(num: any) { //calls after start game
+  checkQuizAmount(data: any) { 
 
-  	if (num.response_code !== 0) {
+  	if (data.response_code !== 0) {
 
   		this.resetOptions = true;
   		
@@ -182,13 +160,14 @@ export class GamescreenComponent implements OnInit {
 
       if (!this.gameStarted) {
         
-        this.quizes = num.results;
+        this.quizes = data.results;
         this.gameStarted = !this.gameStarted;
 
       } 
 
-  		if (this.gamestage < 4) {
+  		if (this.gamestage < 3) {
   		this.gamestage++;
+
   		}
 
   		this.nextQuestion();
@@ -196,49 +175,24 @@ export class GamescreenComponent implements OnInit {
 
   }
 
-  // appendMoreQuizes(num: any) { 
-
-  //   if (num.response_code !== 0) {
-
-  //     this.gameover = true;
-      
-
-  //   } else {
-
-  //     this.resetOptions = false;     
-      
-  //     num.results.map(result =>{
-  //       this.quizes.push(result);
-  //     });
-
-      
-  //   }
-
-  // }
 
   resetGame() {
   	this.gamestage = 0;
   	this.quizNumber = 0;
-  	this.resetOptions = false;
-  	this.formatName = "";
+  	this.resetOptions = false;  	
   	this.categoryName = "";
   	this.options.difficulty = "";
     this.gameover = false;
     this.gameStarted = false;
     this.allAnswers = [];
     this.correctCount = this.incorrectCount = 0;
+    this.activeDifficulty = "";
 
   }
 
   trackRemainingQuiz() {
 
   	if (this.quizes.length  == 0) {
-
-  		//   	this.trivia.getQuizes(this.options).subscribe(data =>{
-
-  		// 	this.appendMoreQuizes(data);
-
-  		// });
 
       this.gameover = true;
 
@@ -247,6 +201,7 @@ export class GamescreenComponent implements OnInit {
   }
 
   getAnswers(): void {
+
      this.allAnswers = this.answerServ.getCompoundAnswers(this.activeQuiz.incorrect_answers, this.activeQuiz.correct_answer);
      this.answernode.changes.subscribe(c => { this.answerComponents = c.toArray() }); //return updated Child components with answers embedded
   }
@@ -274,7 +229,7 @@ export class GamescreenComponent implements OnInit {
   }
 
   resetToken() {
-    localStorage.removeItem("apiToken");
+    this.trivia.resetToken();
   }
 
 }
