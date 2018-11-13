@@ -6,7 +6,9 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 Run $ npm  install
 
-Might need to run $ npm i @angular/core -s
+Might need to install angular core dependency manually:
+
+$ npm i @angular/core -s
 
 Afterwards $ ng serve --open
 
