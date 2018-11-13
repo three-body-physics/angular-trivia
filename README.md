@@ -8,11 +8,13 @@ https://angular-trivia.herokuapp.com/
 
 ## testing
 
-Run $ npm  install
+> Run $ npm  install
 
-Might need to install angular core dependency manually:
+> In case of missing core module, install dependency manually:
 
-$ npm i @angular/core -s
+> $ npm i @angular/core -s
 
-Afterwards $ ng serve --open
+> Afterwards 
+
+> $ ng serve --open
 
