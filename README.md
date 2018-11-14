@@ -1,6 +1,6 @@
 # Angular Trivia Game
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.5.0.
+Quiz application written in Angular 5, utilizes https://opentdb.com/ API.
 
 ## Live
 
